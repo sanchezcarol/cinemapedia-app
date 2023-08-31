@@ -1,17 +1,27 @@
 
-
-//State Notifier Provider => provider que notifica el cambio de estado
-
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/movies/movies_reposity_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final nowPlayingMoviesProvider = StateNotifierProvider<MovieNotifier, List<Movie>>((ref) {
-
   return MovieNotifier(
     getMovies: ref.watch(movieRepositoryProvider).getNowPlaying
   );
+});
 
+final popularMoviesProvider = StateNotifierProvider<MovieNotifier, List<Movie>>((ref) {
+  return MovieNotifier(
+    getMovies: ref.watch(movieRepositoryProvider).getPopular  );
+});
+
+final topRatedMoviesProvider = StateNotifierProvider<MovieNotifier, List<Movie>>((ref) {
+  return MovieNotifier(
+    getMovies: ref.watch(movieRepositoryProvider).getTopRated  );
+});
+
+final upcomingMoviesProvider = StateNotifierProvider<MovieNotifier, List<Movie>>((ref) {
+  return MovieNotifier(
+    getMovies: ref.watch(movieRepositoryProvider).getUpcoming  );
 });
 
 typedef MovieCallback = Future<List<Movie>> Function({int page});
