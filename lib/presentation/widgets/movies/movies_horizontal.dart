@@ -47,7 +47,7 @@ class _MoviesHorizontalState extends State<MoviesHorizontal> {
         padding: const EdgeInsets.only(top: 20),
         child: Column(
           children: [
-            if(widget.title != null && widget.subtitle != null) _HeaderTitle(title: widget.title,subtitle: widget.subtitle),
+            if(widget.title != null || widget.subtitle != null) _HeaderTitle(title: widget.title,subtitle: widget.subtitle),
             Expanded(
               child: ListView.builder(
                 controller: scrollController,
