@@ -7,7 +7,7 @@ import 'package:cinemapedia/infrastructure/models/movie/list_moviedb_response.da
 import 'package:cinemapedia/infrastructure/models/movie/movie_details.dart';
 import 'package:dio/dio.dart';
 
-class MoviesdbDatasource extends MoviesDatasource {
+class MoviedbDatasource extends MoviesDatasource {
 
   final dio = Dio(
     BaseOptions(
@@ -24,8 +24,8 @@ class MoviesdbDatasource extends MoviesDatasource {
     final List<Movie> movie = 
     movieResponse.results
       .where((moviedb) => moviedb.posterPath != 'no-post')
-      .map((movie) => MoviesMapper.movieDBToEntity(movie)).toList();
-    
+      .map((movie) => MovieMapper.movieDBToEntity(movie)).toList();
+
     return movie;
 
   }
@@ -75,7 +75,7 @@ class MoviesdbDatasource extends MoviesDatasource {
     final response = await dio.get('/movie/$id');
     if(response.statusCode != 200) throw Exception('Movie with id: $id not found');
     final movie = MovieDetails.fromJson(response.data);
-    return MoviesMapper.movieDetailsToEntity(movie);
+    return MovieMapper.movieDetailsToEntity(movie);
   }
 
 

@@ -50,6 +50,7 @@ class _HomeViewState extends ConsumerState {
     final upcomingMovies = ref.watch(upcomingMoviesProvider); //obtenemos el estado
     
     return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
       slivers: [
         const SliverAppBar(
           floating: true,
