@@ -1,94 +1,28 @@
-import 'package:cinemapedia/presentation/providers/movies/initial_loading_provider.dart';
-import 'package:cinemapedia/presentation/providers/providers.dart';
-import 'package:cinemapedia/presentation/widgets/movies/movies_horizontal.dart';
-import 'package:cinemapedia/presentation/widgets/shared/loader.dart';
+import 'package:cinemapedia/presentation/views/views.dart';
 import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends StatelessWidget {
   static const name = 'home-screen';
+  final int pageIndex;
 
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.pageIndex});
+
+  final viewRoutes = const <Widget>[
+    HomeView(),
+    Placeholder(),
+    FavoritesView()
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: _HomeView(),
-      bottomNavigationBar: CustomBottomNavigation(),
+    return Scaffold(
+      body: IndexedStack(
+        index: pageIndex,
+        children: viewRoutes,
+      ),
+      bottomNavigationBar: CustomBottomNavigation(currentIndex: pageIndex,),
     );
   }
 }
 
-class _HomeView extends ConsumerStatefulWidget {
-  const _HomeView();
-
-  @override
-  _HomeViewState createState() => _HomeViewState();
-}
-
-class _HomeViewState extends ConsumerState {
-  @override
-  void initState() {
-    super.initState();
-    ref.read(nowPlayingMoviesProvider.notifier).loadNextPage(); //Llamamos la funcion
-    ref.read(popularMoviesProvider.notifier).loadNextPage(); //Llamamos la funcion
-    ref.read(topRatedMoviesProvider.notifier).loadNextPage(); //Llamamos la funcion
-    ref.read(upcomingMoviesProvider.notifier).loadNextPage(); //Llamamos la funcion
-
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final loading = ref.watch(initialLoadingProvider);
-    if(loading) return const Loader();
-    
-    final slideshowMovies = ref.watch(moviesSliderProvider); //obtenemos el estado
-    final nowPlayingMovies = ref.watch(nowPlayingMoviesProvider); //obtenemos el estado
-    final popularMovies = ref.watch(popularMoviesProvider); //obtenemos el estado
-    final topRated = ref.watch(topRatedMoviesProvider); //obtenemos el estado
-    final upcomingMovies = ref.watch(upcomingMoviesProvider); //obtenemos el estado
-    
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
-      slivers: [
-        const SliverAppBar(
-          floating: true,
-          flexibleSpace: FlexibleSpaceBar(
-            title: CustomAppbar(),
-            titlePadding: EdgeInsets.symmetric(horizontal: 0),
-          ),
-        ),
-
-        SliverList(delegate: SliverChildBuilderDelegate((context, index) {
-          return Column(
-              children: [
-                MoviesSlider(movies: slideshowMovies),
-                MoviesHorizontal(
-                  movies: nowPlayingMovies, 
-                  title: 'En cines', 
-                  subtitle: 'Lunes 20',
-                  loadNextPage: () => ref.read(nowPlayingMoviesProvider.notifier).loadNextPage()
-                ),
-                MoviesHorizontal(
-                  movies: popularMovies, 
-                  title: 'Populares', 
-                  loadNextPage: () => ref.read(popularMoviesProvider.notifier).loadNextPage()
-                ),
-                MoviesHorizontal(
-                  movies: topRated, 
-                  title: 'Top Rated', 
-                  loadNextPage: () => ref.read(topRatedMoviesProvider.notifier).loadNextPage()
-                ),
-                MoviesHorizontal(
-                  movies: upcomingMovies, 
-                  title: 'Upcoming', 
-                  loadNextPage: () => ref.read(upcomingMoviesProvider.notifier).loadNextPage()
-                )
-              ],
-            );
-        }, childCount: 1)),
-      ],
-    );
-  }
-}
