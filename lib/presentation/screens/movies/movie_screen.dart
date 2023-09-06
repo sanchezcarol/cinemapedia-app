@@ -26,8 +26,9 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
   @override
   Widget build(BuildContext context) {
     final Movie? movie = ref.watch(moviedbProvider)[widget.movieId];
-    if (movie == null)
+    if (movie == null){
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       body: CustomScrollView(
@@ -35,9 +36,9 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
         slivers: [
           _CustomSliverAppBar(movie),
           SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-            return _MovieDetails(movie: movie);
-          }, childCount: 1))
+              delegate: SliverChildBuilderDelegate((context, index) => _MovieDetails(movie: movie), 
+              childCount: 1)
+          )
         ],
       ),
     );
@@ -50,49 +51,69 @@ class _MovieDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme;
-    final sizes = MediaQuery.of(context).size;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    final size = MediaQuery.of(context).size;
+    final textStyles = Theme.of(context).textTheme;
+
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              
+              // Imagen
               ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(movie.posterPath,
-                      width: sizes.width * 0.3)),
-              const SizedBox(width: 15),
+                borderRadius: BorderRadius.circular(20),
+                child: Image.network(
+                  movie.posterPath,
+                  width: size.width * 0.3,
+                ),
+              ),
+
+              const SizedBox( width: 10 ),
+
+              // Descripción
               SizedBox(
-                width: sizes.width * 0.60,
+                width: (size.width - 40) * 0.7,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(movie.title, style: textStyle.titleLarge),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(movie.overview)
+                    Text( movie.title, style: textStyles.titleLarge ),
+                    Text( movie.overview ),
                   ],
                 ),
               )
+
             ],
           ),
-          const SizedBox(height: 10),
-          Wrap(children: [
-            ...movie.genreIds.map((genre) => Container(
-                margin: const EdgeInsets.only(right: 10),
+        ),
+
+        
+        // Generos de la película
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: Wrap(
+            children: [
+              ...movie.genreIds.map((gender) => Container(
+                margin: const EdgeInsets.only( right: 10),
                 child: Chip(
-                    label: Text(genre),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)))))
-          ]),
-          _ActorsByMovie(movieId: movie.id.toString()),
-        ],
-      ),
+                  label: Text( gender ),
+                  shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(20)),
+                ),
+              ))
+            ],
+          ),
+        ),
+
+        _ActorsByMovie(movieId: movie.id.toString() ),
+
+        const SizedBox(height: 50 ),
+      ],
     );
   }
 }
@@ -106,7 +127,9 @@ class _ActorsByMovie extends ConsumerWidget {
     final List<Actor>? actors = ref.watch(actorsByMovieProvider)[movieId];
 
     if (actors == null)
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    {
+      return const CircularProgressIndicator();
+    }
 
      return SizedBox(
       height: 300,
